@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var popover: NSPopover!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+//        NSApp.setActivationPolicy(.accessory) // 设置应用程序的激活策略为 accessory
         let contentView = ContentView()
         let popover = NSPopover()
         popover.contentSize = NSSize(width: 400, height: 400)
@@ -16,7 +17,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         self.popover = popover
         self.statusBarItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
         if let button = self.statusBarItem.button {
-            button.image = NSImage(systemSymbolName: "square.stack.fill", accessibilityDescription: nil)
+            let iconImage = NSImage(systemSymbolName: "calendar", accessibilityDescription: nil)
+            if (iconImage != nil) {
+                let size = NSSize(width: 50, height: 50)
+                iconImage?.size = size
+            }
+            button.image = iconImage
             button.action = #selector(togglePopover(_:))
 //            button.action = #selector(statusBarButtonClicked(_:))
 //            button.sendAction(on: [.leftMouseUp, .rightMouseUp])

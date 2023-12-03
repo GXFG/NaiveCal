@@ -38,8 +38,18 @@ func handleDate(ymdStr: String, num: Int,byAdding: Calendar.Component = .day) ->
 
 struct ContentView: View {
     @State var weekBeginsOn = 1 // 1, 7
-    @State var weekTitleList: [String] = ["一", "二", "三", "四", "五", "六", "日"]
-    @State var today = ""
+    @State var weekLabelList = [
+        WeekLabel(title: "一", value: 1),
+        WeekLabel(title: "二", value: 2),
+        WeekLabel(title: "三", value: 3),
+        WeekLabel(title: "四", value: 4),
+        WeekLabel(title: "五", value: 5),
+        WeekLabel(title: "六", value: 6),
+        WeekLabel(title: "日", value: 7),
+    ]
+    @State var todayYmd = ""
+    @State var trueYear = 0
+    @State var trueMonth = 0
     @State var currYear = calendar.component(.year, from: nowDate)
     @State var currMonth = calendar.component(.month, from: nowDate)
     @State var currDay = calendar.component(.day, from: nowDate)
@@ -51,7 +61,9 @@ struct ContentView: View {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
         let today = dateFormatter.string(from: nowDate)
-        self.today = today
+        self.todayYmd = today
+        self.trueYear = calendar.component(.year, from: nowDate)
+        self.trueMonth = calendar.component(.month, from: nowDate)
         self.onRender()
     }
 
@@ -86,7 +98,7 @@ struct ContentView: View {
       day: solarEle.day,
       desc: desc, // 节日
       type: dayType, // 0不展示，1休，2班
-      isToday: self.today == formatDate,
+      isToday: self.todayYmd == formatDate,
       isWeekend: [1, 7].contains(week),
       isFestival: isFestival,
       isNotCurrMonth: type != "main")
@@ -194,50 +206,74 @@ struct ContentView: View {
         return color
     }
 
-  var body: some View {
+    var body: some View {
       VStack {
           HStack {
-              Button(action: {
-                  NSApplication.shared.terminate(nil)
-              }) {
-                  Image(systemName: "power")
-              }.keyboardShortcut("q")
-              Button(action: self.onPrevMonth) {
-                  Image(systemName: "chevron.left")
+              HStack {
+                  Button(action: {
+                      NSApplication.shared.terminate(nil)
+                  }) {
+                      Image(systemName: "power")
+                  }
+                  .keyboardShortcut("q")
+
+                  Button(action: self.onPrevMonth) {
+                      Image(systemName: "chevron.left")
+                  }
+                  
+                  HStack(spacing: 0) {
+                      Text("\(String(format: "%d", self.currYear))")
+                          .frame(width: 40)
+                          .font(.title3)
+                      Text("-")
+                          .frame(width: 10)
+                          .font(.title3)
+                      Text("\(Text(String(format: "%02d", self.currMonth)))")
+                          .frame(width: 20)
+                          .font(.title3)
+        
+                  }
+                  
+                  Button(action: self.onNextMonth) {
+                      Image(systemName: "chevron.right")
+                  }
               }
-              Text("\(self.currYear) - \(self.currMonth)")
-                  .frame(width: 70, height: 25)
-                  .fontWeight(.bold)
-              Button(action: self.onNextMonth) {
-                  Image(systemName: "chevron.right")
-              }
-              Button(action: self.onReset) {
-                  Image(systemName: "gobackward")
+
+              if (self.trueYear != self.currYear || self.trueMonth != self.currMonth) {
+                  Button(action: self.onReset) {
+                      Image(systemName: "arrowshape.turn.up.backward")
+                  }
+              } else {
+                  Spacer()
+                      .frame(width: 40)
               }
           }
 
 
           HStack(spacing: 0) {
-              ForEach(weekTitleList.indices, id: \.self) { index in
-                  Text(weekTitleList[index]).bold()
+              ForEach(weekLabelList, id: \.value) { weekLabel in
+                  Text("\(weekLabel.title)")
                       .frame(width: 45, height: 20)
+                      .font(.title3)
+                      .foregroundColor((weekLabel.value == 6 || weekLabel.value == 7) ? .red : nil)
               }
           }
 
           VStack(spacing: 0) {
-              ForEach(dateLayoutList.indices, id: \.self) { rowIndex in
+              ForEach(dateLayoutList, id: \.self ) { rowItem in
                   HStack(spacing: 0) {
-                      ForEach(dateLayoutList[rowIndex].indices, id: \.self) { itemIndex in
+                      ForEach(rowItem, id: \.self) { dayItem in
                           VStack {
-                              Text("\(dateLayoutList[rowIndex][itemIndex].day)")
+                              Text("\(dayItem.day)")
                                   .font(.title2)
-                              Text("\(dateLayoutList[rowIndex][itemIndex].desc)")
+                                  .foregroundColor(dayItem.isWeekend ? .red : nil)
+                              Text("\(dayItem.desc)")
                                   .font(.caption)
-                                  .foregroundColor(dateLayoutList[rowIndex][itemIndex].isFestival ? .red : nil)
+                                  .foregroundColor(dayItem.isFestival ? .red : nil)
                           }
                           .frame(width: 45, height: 45)
-                          .opacity(dateLayoutList[rowIndex][itemIndex].isNotCurrMonth ? 0.3 : 1)
-                          .background(getItemColor(dayItem: dateLayoutList[rowIndex][itemIndex]))
+                          .opacity(dayItem.isNotCurrMonth ? 0.3 : 1)
+                          .background(getItemColor(dayItem: dayItem))
                       }
                   }
               }

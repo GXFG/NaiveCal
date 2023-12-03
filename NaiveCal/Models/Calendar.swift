@@ -1,6 +1,11 @@
 import Foundation
 
-struct DayItem {
+struct WeekLabel: Hashable {
+    var title: String
+    var value: Int // 1234567
+}
+
+struct DayItem: Hashable {
     var date: String // YYYY-MM-DD
     var day: Int // D
     var desc: String // 节日
