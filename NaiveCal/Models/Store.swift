@@ -1,5 +1,6 @@
-import Foundation
+import SwiftUI
 
-class Store: ObservableObject {
-    var currSelectDay = ""
+class AppSettings: ObservableObject {
+    @AppStorage("settingWeekBeginsOn") public var weekBeginsOn = 1
+    @AppStorage("settingIsLunarVisible") public var isLunarVisible = true
 }

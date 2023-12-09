@@ -3,14 +3,14 @@ import SwiftUI
 @main
 struct NaiveCalApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject var store = Store()
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .frame(width: 350, height: 350)
-                .environmentObject(store)
-        }
-        .windowStyle(HiddenTitleBarWindowStyle())
+        Settings {}
+        //        WindowGroup {
+        //            SettingView()
+        //                .environmentObject(store)
+        //        }
+        //        .defaultSize(width: 600, height: 500)
+        //        .windowStyle(HiddenTitleBarWindowStyle())
     }
 }
