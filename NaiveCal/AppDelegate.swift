@@ -89,9 +89,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let settingWindow = NSWindow(contentViewController: settingViewController)
         settingWindow.setContentSize(NSSize(width: 500, height: 400))
         settingWindow.title = "NaiveCal"
-//        settingWindow.title = NSLocalizedString("setting", comment: "")
-//        settingWindow.titleVisibility = .hidden
-//        settingWindow.titlebarAppearsTransparent = true // 设置标题栏透明
+        //        settingWindow.title = NSLocalizedString("setting", comment: "")
+        //        settingWindow.titleVisibility = .hidden
+        //        settingWindow.titlebarAppearsTransparent = true // 设置标题栏透明
         settingWindow.styleMask.insert(.fullSizeContentView)
         settingWindow.center()
         settingWindow.makeKeyAndOrderFront(nil) // 使窗口成为主窗口并将其置于前面

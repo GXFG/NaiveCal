@@ -81,6 +81,12 @@
     },
     "Github" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Github"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -101,6 +107,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "界面"
+          }
+        }
+      }
+    },
+    "newVersion" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New version"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新版本"
           }
         }
       }

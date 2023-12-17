@@ -3,7 +3,7 @@ import LunarSwift
 
 struct ContentView: View {
     @StateObject var settings = AppSettings()
-
+    
     private var calendar = Calendar.current
     private let sundayOption = WeekLabel(title: NSLocalizedString("WeekLabelTitle7", comment: ""), value: 7)
     private let weekLabelList = [
@@ -16,16 +16,17 @@ struct ContentView: View {
         WeekLabel(title: NSLocalizedString("WeekLabelTitle7", comment: ""), value: 7),
     ]
     
-    @State private var currYear: Int
-    @State private var currMonth: Int
-    @State private var currDay: Int
+    @State private var currYear = 0
+    @State private var currMonth = 0
+    @State private var currDay = 0
     @State private var dateList: [DayItem] = []
     @State private var dateLayoutList: [[DayItem]] = []
     
-    @State private var todayYmd: String
-    @State private var trueYear: Int
-    @State private var trueMonth: Int
+    @State private var todayYmd = ""
+    @State private var trueYear = 0
+    @State private var trueMonth = 0
     
+    @State private var isNewVersion = false
     @State private var hoveredDayItem: DayItem? = nil
     
     var computedweekList: [WeekLabel] {
@@ -56,14 +57,17 @@ struct ContentView: View {
     init() {
         self.calendar.timeZone = TimeZone(identifier: "UTC")!
         self.calendar.firstWeekday = 2 // 设置星期一为一周的第一天
+    }
+    
+    func setCurrData() {
         let nowDate = Date()
         let datecomponents = calendar.dateComponents([.year, .month, .day], from: nowDate)
-        self._currYear = State(initialValue: datecomponents.year ?? 0)
-        self._currMonth = State(initialValue: datecomponents.month ?? 0)
-        self._currDay = State(initialValue: datecomponents.day ?? 0)
-        self._todayYmd = State(initialValue: DateFormatterSingleton.sharedYMD.string(from: nowDate))
-        self._trueYear = self._currYear
-        self._trueMonth = self._currMonth
+        self.currYear = datecomponents.year ?? 0
+        self.currMonth = datecomponents.month ?? 0
+        self.currDay = datecomponents.day ?? 0
+        self.todayYmd = DateFormatterSingleton.sharedYMD.string(from: nowDate)
+        self.trueYear = self.currYear
+        self.trueMonth = self.currMonth
     }
     
     func getAdjustedWeekday(weekday: Int) -> Int {
@@ -90,7 +94,7 @@ struct ContentView: View {
         let weekday = calendar.component(.weekday, from: modifiedDate)
         let adjustedWeekday = getAdjustedWeekday(weekday: weekday)
         let resYmdStr = DateFormatterSingleton.sharedYMD.string(from: modifiedDate)
-
+        
         return (
             date: modifiedDate,
             ymdStr: resYmdStr,
@@ -145,7 +149,7 @@ struct ContentView: View {
         let currMonthFirstDate = "\(self.currYear)-\(self.currMonth)-01"
         var currMonthFirstDateWeek = calendar.component(.weekday, from: DateFormatterSingleton.sharedYMD.date(from: currMonthFirstDate)!)
         currMonthFirstDateWeek = getAdjustedWeekday(weekday: currMonthFirstDateWeek)
-
+        
         //padStart
         var padStartCount = currMonthFirstDateWeek - 1
         // begins on sunday
@@ -161,7 +165,7 @@ struct ContentView: View {
         let currMonthLastDateCustomEle = self.handleDate(ymdStr: currNextMonthFirstDate, num: -1, byAdding: .day)
         let currMonthLastDay = currMonthLastDateCustomEle.day
         let currMonthLastDateWeek = currMonthLastDateCustomEle.week
-
+        
         // add main
         for index in -1..<currMonthLastDay - 1 {
             let dateEle = self.handleDate(ymdStr: currMonthFirstDate, num: index + 1).date
@@ -178,7 +182,7 @@ struct ContentView: View {
             // 确保整体为6行
             padEndCount += 7
         }
-
+        
         for index in 0..<padEndCount {
             let dateEle = self.handleDate(ymdStr: currMonthLastDateCustomEle.ymdStr, num: index + 1).date
             genDateList(type: "end", dateEle: dateEle)
@@ -222,7 +226,7 @@ struct ContentView: View {
         self.currDay = currDateComponents.day ?? 0
         self.onRender()
     }
-
+    
     func getItemTagTextContent(dayItem: DayItem) -> String {
         var text = ""
         if dayItem.type == 1 {
@@ -244,12 +248,17 @@ struct ContentView: View {
         }
         return color
     }
-
+    
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                Spacer()
-                    .frame(width: 50)
+                HStack {
+                    if (self.isNewVersion) {
+                        Link("newVersion", destination: URL(string: "https://github.com/GXFG/naivecal-macOS/releases")!)
+                    }
+                }
+                .frame(width: 50)
+                .padding(.trailing, 3)
                 
                 HStack {
                     Button(action: self.onPrevMonth) {
@@ -313,7 +322,7 @@ struct ContentView: View {
                                 .onHover { hovering in
                                     self.hoveredDayItem = hovering ? dayItem : nil
                                 }
-
+                                
                                 Text(getItemTagTextContent(dayItem: dayItem))
                                     .padding([.top, .trailing], 1)
                                     .font(.system(size: 10))
@@ -326,6 +335,7 @@ struct ContentView: View {
         }
         .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
         .onAppear{
+            self.setCurrData()
             self.onRender()
         }
     }
