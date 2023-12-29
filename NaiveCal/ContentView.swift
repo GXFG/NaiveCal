@@ -220,10 +220,7 @@ struct ContentView: View {
     }
     
     func onReset() {
-        let currDateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
-        self.currYear = currDateComponents.year ?? 0
-        self.currMonth = currDateComponents.month ?? 0
-        self.currDay = currDateComponents.day ?? 0
+        self.setCurrData()
         self.onRender()
     }
     
@@ -247,6 +244,10 @@ struct ContentView: View {
             color = Color("DayItemTodayColor")
         }
         return color
+    }
+    
+    func onActivated() {
+        //        self.onReset()
     }
     
     var body: some View {
@@ -280,11 +281,11 @@ struct ContentView: View {
                 }
                 
                 HStack {
-                    if (self.trueYear != self.currYear || self.trueMonth != self.currMonth) {
-                        Button(action: self.onReset) {
-                            Image(systemName: "arrowshape.turn.up.backward")
-                        }
+                    //                    if (self.trueYear != self.currYear || self.trueMonth != self.currMonth) {
+                    Button(action: self.onReset) {
+                        Image(systemName: "arrowshape.turn.up.backward")
                     }
+                    //                    }
                 }
                 .frame(width: 50)
             }
@@ -335,8 +336,7 @@ struct ContentView: View {
         }
         .padding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
         .onAppear{
-            self.setCurrData()
-            self.onRender()
+            self.onReset()
         }
     }
 }

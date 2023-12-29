@@ -6,6 +6,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var window: NSWindow?
     var statusBarItem: NSStatusItem!
     var popover: NSPopover!
+    var contentView = ContentView()
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory) // 应用程序的激活策略为 accessory
@@ -17,7 +18,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func applicationWillTerminate(_ notification: Notification) {}
     
     func setupPopover() {
-        let contentView = ContentView()
         popover = NSPopover()
         popover.contentSize = NSSize(width: 400, height: 400)
         popover.behavior = .transient
@@ -49,6 +49,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if let button = statusBarItem.button {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             NSApp.activate(ignoringOtherApps: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.contentView.onActivated()
+            }
         }
     }
     
